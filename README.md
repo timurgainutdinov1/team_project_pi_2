@@ -54,7 +54,7 @@ print("Predicted class:", model.config.id2label[predicted_class_idx])
 ```
 streamlit run image_classification_streamlit.py
 ```
-Для использования модели, развернутой в облаке _Streamlit_  необходимо перейти по [ссылке](https://timurgainutdinov1-team-pr-image-classification-streamlit-1fvl8t.streamlit.app/).
+Для использования модели, развернутой в облаке _Streamlit_  необходимо перейти по [ссылке](https://image-classification-pi-2.streamlit.app/).
 
 ## Просмотр API
 1) Cохранить файл image_classification_fastapi.py
