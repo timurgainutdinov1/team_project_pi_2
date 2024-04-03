@@ -1,4 +1,5 @@
 from streamlit.testing.v1 import AppTest
+import time
 
 at = AppTest.from_file("image_classification_streamlit.py", default_timeout=1000).run()
 
@@ -9,7 +10,7 @@ def test_correct_url():
     """
     at.text_input[0].set_value("https://goo.su/TDcn").run()
     at.button[0].click().run()
-    print(at.markdown[0].value)
+    time.sleep(5)
     assert at.markdown[0].value == "Результаты распознавания: :rainbow[tabby, tabby cat]"
 
 
