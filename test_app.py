@@ -1,35 +1,22 @@
-"""Тесты для streamlit."""
-
+"""test_app.py"""
 from streamlit.testing.v1 import AppTest
 import time
 
-at = AppTest.from_file("image_classification_streamlit.py",
-                       default_timeout=1000).run()
-
+at = AppTest.from_file("image_classification_streamlit.py", default_timeout=1000).run()
 
 def test_incorrect_url():
-    """Пользователь вводит некорректную ссылку.
-
-    Пользователь вводит некорректную ссылку на изображение
-    (ссылку на объект не являющийся изображением).
-    """
     at.text_input[0].set_value("https://www.google.com/").run()
     at.button[0].click().run()
-    assert at.error[0].value == "Не удалось найти изображение по указанной ссылке. Попробуйте снова!"
+    assert at.error[0].value == 'Не удалось найти изображение по указанной ссылке. Попробуйте снова!'
 
 def test_null_url():
-    """Пользователь не вводит ссылку.
-
-    Пользователь не вводит ссылку на изображение
-    (оставляет поле для ввода ссылки пустым).
-    """
     at.text_input[0].set_value("").run()
     at.button[0].click().run()
-    assert at.error[0].value == "Не удалось найти изображение по указанной ссылке. Попробуйте снова!"
-
+    assert at.error[0].value == 'Не удалось найти изображение по указанной ссылке. Попробуйте снова!'
 
 def test_correct_url():
     at.text_input[0].set_value("https://www.rgo.ru/sites/default/files/styles/head_image_article/public/node/61549/photo-2023-11-08-150058.jpeg").run()
     at.button[0].click().run()
     time.sleep(5)
-    assert at.markdown[0].value == "Результаты распознавания: :rainbow[tabby, tabby cat]"
+    assert at.markdown[0].value == 'Результаты распознавания: :rainbow[tabby, tabby cat]'
+
