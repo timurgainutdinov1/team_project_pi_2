@@ -7,14 +7,14 @@ from PIL import Image
 import requests
 
 
-@st.cache
+@st.cache_resource
 def load_model():
     """Загрузка модели для классификации изображений."""
     return (ViTForImageClassification
             .from_pretrained('google/vit-base-patch16-224'))
 
 
-@st.cache
+@st.cache_resource
 def load_processor():
     """Загрузка процессора для пред. изображений в требуемом формате."""
     return ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
