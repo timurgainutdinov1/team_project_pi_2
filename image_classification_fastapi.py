@@ -1,29 +1,42 @@
-from PIL import Image
+"""Модель классификации изображений с FastAPI."""
+
 import requests
 from fastapi import FastAPI
+from PIL import Image
 from pydantic import BaseModel
-from transformers import ViTImageProcessor, ViTForImageClassification
+from transformers import ViTForImageClassification, ViTImageProcessor
 
 
 class ImageRequest(BaseModel):
+    """Класс запроса для обработки изображения."""
+
     url: str
 
 
 app = FastAPI()
+
 # Процессор для представления изображений в требуемом формате
-processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
+processor = ViTImageProcessor.from_pretrained("google/vit-base-patch16-224")
+
 # Модель для классификации изображений
-model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
+model = (ViTForImageClassification
+         .from_pretrained("google/vit-base-patch16-224"))
 
 
-# Получение изображения
 def load_image(url):
+    """Загрузка изображения из указанного URL-адреса
+    с помощью библиотеки requests."""
     img = Image.open(requests.get(url, stream=True).raw)
     return img
 
 
-# Обработка и распознавание изображения
 def image_classification(picture):
+    """Обработка и распознавание изображения.
+
+    Принимает изображение, преобразует его в требуемый формат
+    с помощью процессора, пропускает его через модель,
+    получает вероятности классов и возвращает предсказанный класс.
+    """
     inputs = processor(images=picture, return_tensors="pt")
     outputs = model(**inputs)
     logits = outputs.logits
@@ -31,16 +44,22 @@ def image_classification(picture):
     return model.config.id2label[predicted_class_idx]
 
 
-# Маршрут для корневого URL-адреса
 @app.get("/")
 def root():
+    """Маршрут для корневого URL-адреса.
+
+    Возвращает сообщение, указывающее, что это API классификации изображений.
+    """
     return {"message": "Image classification API"}
 
 
 @app.post("/classify-image")
 def classify_image(request: ImageRequest):
-    """
-    Classify an image using a pre-trained ViT model.
+    """Классифицирует изображение с помощью готовой модели ViT.
+
+    Принимает запрос с URL-адресом изображения, загружает изображение,
+    классифицирует его с помощью готовой модели ViT и возвращает результат.
+    Если изображение не может быть загружено, возвращается сообщение об ошибке.
     """
     try:
         loaded_image = load_image(request.url)
