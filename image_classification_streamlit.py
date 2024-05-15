@@ -102,13 +102,11 @@ if result:
         st.image(loaded_image)
         with st.spinner("Идет обработка... Пожалуйста, подождите..."):
             result = image_classification(loaded_image)
-        st.markdown(
-            f"Результаты распознавания: "
-            f":rainbow[{ts.translate_text(result,
-                                          translator="bing",
-                                          from_language="en",
-                                          to_language="ru")}]"
-        )
+        translated_result = ts.translate_text(result,
+                                              translator="bing",
+                                              from_language="en",
+                                              to_language="ru")
+        st.markdown(f"Результаты распознавания: {translated_result}")
     except MissingSourceError:
         st.error(
             "Вы не предоставили источник "
