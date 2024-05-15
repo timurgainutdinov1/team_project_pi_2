@@ -5,3 +5,4 @@ requests
 Pillow
 pydantic
 streamlit
+translators

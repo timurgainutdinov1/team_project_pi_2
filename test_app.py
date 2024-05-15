@@ -8,14 +8,15 @@ at = AppTest.from_file("image_classification_streamlit.py",
                        default_timeout=1000).run()
 
 
-def test_incorrect_url():
+def test_no_image_url():
     """Проверка ввода URL-адреса на объект,
-    который не является изображением."""
+    который не является изображением"""
     at.text_input[0].set_value("https://www.google.com/").run()
     at.button[0].click().run()
     assert at.error[0].value == (
-        "Не удалось найти изображение по указанной ссылке. "
-        "Попробуйте снова!"
+        "Ваша ссылка или файл не содержат изображения. "
+        "Предоставьте корректную ссылку или файл "
+        "и попробуйте снова!"
     )
 
 
@@ -24,8 +25,10 @@ def test_null_url():
     at.text_input[0].set_value("").run()
     at.button[0].click().run()
     assert at.error[0].value == (
-        "Не удалось найти изображение по указанной ссылке. "
-        "Попробуйте снова!"
+        "Вы не предоставили источник "
+        "для загрузки изображения. "
+        "Загрузите файл с изображением или укажите ссылку "
+        "и попробуйте снова!"
     )
 
 
@@ -43,6 +46,16 @@ def test_correct_url():
     at.button[0].click().run()
     time.sleep(5)
     assert at.markdown[0].value == (
-        "Результаты распознавания: "
-        ":rainbow[tabby, tabby cat]"
+        "Результаты распознавания: табби, полосатый кот"
+    )
+
+
+def test_incorrect_url():
+    """Проверка ввода некорректного URL-адреса"""
+    at.text_input[0].set_value("1234").run()
+    at.button[0].click().run()
+    assert at.error[0].value == (
+        "Некорректная ссылка! "
+        "Укажите корректную ссылку "
+        "и попробуйте снова!"
     )
