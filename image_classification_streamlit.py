@@ -101,7 +101,7 @@ if result:
             raise MissingSourceError
         st.image(loaded_image)
         with st.spinner("Идет обработка... Пожалуйста, подождите..."):
-            result = image_classification(loaded_image).split(',')[0]
+            result = image_classification(loaded_image)
         st.markdown(
             f"Результаты распознавания: "
             f":rainbow[{ts.translate_text(result,
