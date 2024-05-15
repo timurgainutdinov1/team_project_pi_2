@@ -20,17 +20,6 @@ def test_no_image_url():
     )
 
 
-def test_incorrect_url():
-    """Проверка ввода некорректного URL-адреса"""
-    at.text_input[0].set_value("1234").run()
-    at.button[0].click().run()
-    assert at.error[0].value == (
-        "Некорректная ссылка! "
-        "Укажите корректную ссылку "
-        "и попробуйте снова!"
-    )
-
-
 def test_null_url():
     """Проверка ввода пустого URL-адреса."""
     at.text_input[0].set_value("").run()
@@ -57,6 +46,16 @@ def test_correct_url():
     at.button[0].click().run()
     time.sleep(5)
     assert at.markdown[0].value == (
-        "Результаты распознавания: "
-        ":rainbow[табби, полосатый кот]"
+        "Результаты распознавания: табби, полосатый кот"
+    )
+
+
+def test_incorrect_url():
+    """Проверка ввода некорректного URL-адреса"""
+    at.text_input[0].set_value("1234").run()
+    at.button[0].click().run()
+    assert at.error[0].value == (
+        "Некорректная ссылка! "
+        "Укажите корректную ссылку "
+        "и попробуйте снова!"
     )
