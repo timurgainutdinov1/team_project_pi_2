@@ -23,14 +23,14 @@ model = (ViTForImageClassification
          .from_pretrained("google/vit-base-patch16-224"))
 
 
-def load_image(url):
+async def load_image(url):
     """Загрузка изображения из указанного URL-адреса
     с помощью библиотеки requests."""
     img = Image.open(requests.get(url, stream=True).raw)
     return img
 
 
-def image_classification(picture):
+async def image_classification(picture):
     """Обработка и распознавание изображения.
 
     Принимает изображение, преобразует его в требуемый формат
@@ -45,7 +45,7 @@ def image_classification(picture):
 
 
 @app.get("/")
-def root():
+async def root():
     """Маршрут для корневого URL-адреса.
 
     Возвращает сообщение, указывающее, что это API классификации изображений.
@@ -54,7 +54,7 @@ def root():
 
 
 @app.post("/classify-image")
-def classify_image(request: ImageRequest):
+async def classify_image(request: ImageRequest):
     """Классифицирует изображение с помощью готовой модели ViT.
 
     Принимает запрос с URL-адресом изображения, загружает изображение,
@@ -62,8 +62,8 @@ def classify_image(request: ImageRequest):
     Если изображение не может быть загружено, возвращается сообщение об ошибке.
     """
     try:
-        loaded_image = load_image(request.url)
-        result = image_classification(loaded_image)
+        loaded_image = await load_image(request.url)
+        result = await image_classification(loaded_image)
         return {"result": result}
     except IOError:
         return {"error": "Failed to load image from the provided URL"}
