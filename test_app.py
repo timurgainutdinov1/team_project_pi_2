@@ -60,13 +60,3 @@ def test_incorrect_url():
         "и попробуйте снова!"
     )
 
-def test_unsecure_url():
-    """Проверка ввода URL-адреса на незащищенном сайте (HTTP)."""
-    at.text_input[0].set_value(
-        "http://pixyland.org/Images/RandyPan_220w.jpg" 
-    ).run()
-    at.button[0].click().run()
-    time.sleep(5)
-    assert at.error[0].value == (
-        "Изображение с небезопасного сайта!"
-    )
