@@ -6,3 +6,5 @@ Pillow
 pydantic
 streamlit
 translators
+pytest
+pytest-mock
