@@ -3,6 +3,10 @@
 import time
 
 from streamlit.testing.v1 import AppTest
+from image_classification_streamlit import image_classification
+from PIL import UnidentifiedImageError
+from PIL import Image
+import io
 
 at = AppTest.from_file("image_classification_streamlit.py",
                        default_timeout=1000).run()
@@ -60,3 +64,14 @@ def test_incorrect_url():
         "и попробуйте снова!"
     )
 
+
+def test_correct_image_file():
+    """Проверка загрузки изображения через файл."""
+    with open("test_image.jpg", "rb") as file:
+        test_image_bytes = file.read()
+    test_image = Image.open(io.BytesIO(test_image_bytes))
+    try:
+        result = image_classification(test_image)
+        assert result == "Egyptian cat"
+    except UnidentifiedImageError:
+        assert False, "Ошибка при обработке изображения"
