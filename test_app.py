@@ -1,20 +1,26 @@
 """Тесты для проверки приложения Streamlit."""
 
 import time
-
-from streamlit.testing.v1 import AppTest
-from image_classification_streamlit import image_classification
-from PIL import UnidentifiedImageError
-from PIL import Image
+import pytest
 import io
+from PIL import Image, UnidentifiedImageError
+from streamlit.testing.v1 import AppTest
+from model import image_classification, load_processor, load_model
 
-at = AppTest.from_file("image_classification_streamlit.py",
-                       default_timeout=1000).run()
+# Создаем объект AppTest для тестирования приложения Streamlit
+at = AppTest.from_file("main.py", default_timeout=1000).run()
+
+
+@pytest.fixture(scope="module")
+def processor_and_model():
+    """Фикстура для загрузки процессора и модели."""
+    processor = load_processor()
+    model = load_model()
+    return processor, model
 
 
 def test_no_image_url():
-    """Проверка ввода URL-адреса на объект,
-    который не является изображением"""
+    """Проверка ввода URL-адреса на объект, который не является изображением"""
     at.text_input[0].set_value("https://www.google.com/").run()
     at.button[0].click().run()
     assert at.error[0].value == (
@@ -48,7 +54,7 @@ def test_correct_url():
         .run()
     )
     at.button[0].click().run()
-    time.sleep(5)
+    time.sleep(5)  # Добавляем ожидание 5 секунд
     assert at.markdown[0].value == (
         "Результаты распознавания: табби, полосатый кот"
     )
@@ -65,13 +71,14 @@ def test_incorrect_url():
     )
 
 
-def test_correct_image_file():
+def test_correct_image_file(processor_and_model):
     """Проверка загрузки изображения через файл."""
+    processor, model = processor_and_model
     with open("test_image.jpg", "rb") as file:
         test_image_bytes = file.read()
     test_image = Image.open(io.BytesIO(test_image_bytes))
     try:
-        result = image_classification(test_image)
+        result = image_classification(test_image, processor, model)
         assert result == "Egyptian cat"
     except UnidentifiedImageError:
         assert False, "Ошибка при обработке изображения"
