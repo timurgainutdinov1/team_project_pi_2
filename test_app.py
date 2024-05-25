@@ -10,12 +10,14 @@ from model import image_classification, load_processor, load_model
 # Создаем объект AppTest для тестирования приложения Streamlit
 at = AppTest.from_file("main.py", default_timeout=1000).run()
 
+
 @pytest.fixture(scope="module")
 def processor_and_model():
     """Фикстура для загрузки процессора и модели."""
     processor = load_processor()
     model = load_model()
     return processor, model
+
 
 def test_no_image_url():
     """Проверка ввода URL-адреса на объект, который не является изображением"""
@@ -27,6 +29,7 @@ def test_no_image_url():
         "и попробуйте снова!"
     )
 
+
 def test_null_url():
     """Проверка ввода пустого URL-адреса."""
     at.text_input[0].set_value("").run()
@@ -37,6 +40,7 @@ def test_null_url():
         "Загрузите файл с изображением или укажите ссылку "
         "и попробуйте снова!"
     )
+
 
 def test_correct_url():
     """Проверка ввода корректного URL-адреса на изображение."""
@@ -65,6 +69,7 @@ def test_incorrect_url():
         "Укажите корректную ссылку "
         "и попробуйте снова!"
     )
+
 
 def test_correct_image_file(processor_and_model):
     """Проверка загрузки изображения через файл."""
