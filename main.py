@@ -3,8 +3,8 @@
 import streamlit as st
 from PIL import UnidentifiedImageError
 from requests.exceptions import MissingSchema
-from utils import load_image_from_url, load_image_from_file, image_classification, translate_text
-from model import load_model, load_processor
+from utils import load_image_from_url, load_image_from_file, translate_text
+from model import load_model, load_processor, image_classification
 from exceptions import MissingSourceError, TwoSourcesError
 
 
