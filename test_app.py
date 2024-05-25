@@ -2,19 +2,17 @@
 
 import time
 
-from streamlit.testing.v1 import AppTest
-from image_classification_streamlit import image_classification
-from PIL import UnidentifiedImageError
-from PIL import Image
 import io
+from PIL import Image, UnidentifiedImageError
+from streamlit.testing.v1 import AppTest
+from utils import image_classification
 
-at = AppTest.from_file("image_classification_streamlit.py",
-                       default_timeout=1000).run()
+# Запускаем приложение из main.py
+at = AppTest.from_file("main.py", default_timeout=1000).run()
 
 
 def test_no_image_url():
-    """Проверка ввода URL-адреса на объект,
-    который не является изображением"""
+    """Проверка ввода URL-адреса на объект, который не является изображением."""
     at.text_input[0].set_value("https://www.google.com/").run()
     at.button[0].click().run()
     assert at.error[0].value == (
@@ -55,7 +53,7 @@ def test_correct_url():
 
 
 def test_incorrect_url():
-    """Проверка ввода некорректного URL-адреса"""
+    """Проверка ввода некорректного URL-адреса."""
     at.text_input[0].set_value("1234").run()
     at.button[0].click().run()
     assert at.error[0].value == (
@@ -71,7 +69,16 @@ def test_correct_image_file():
         test_image_bytes = file.read()
     test_image = Image.open(io.BytesIO(test_image_bytes))
     try:
-        result = image_classification(test_image)
+        # Загрузка модели и процессора для тестирования
+        from model import load_model, load_processor
+        model = load_model()
+        processor = load_processor()
+
+        result = image_classification(test_image, model, processor)
         assert result == "Egyptian cat"
     except UnidentifiedImageError:
         assert False, "Ошибка при обработке изображения"
+
+if __name__ == "__main__":
+    import pytest
+    pytest.main()
