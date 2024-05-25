@@ -1,39 +1,11 @@
-"""Приложение Streamlit для классификации изображений."""
+"Файл для запуска приложения streamlit."
 
-import requests
 import streamlit as st
-import translators as ts
-from PIL import Image, UnidentifiedImageError
+from PIL import UnidentifiedImageError
 from requests.exceptions import MissingSchema
-from transformers import ViTForImageClassification, ViTImageProcessor
-
-
-class MissingSourceError(Exception):
-    """Класс представляет ошибку,
-    возникающую при отсутствии
-    источника изображения."""
-    pass
-
-
-class TwoSourcesError(Exception):
-    """Класс представляет ошибку,
-    возникающую при указании
-    двух источников изображений."""
-    pass
-
-
-@st.cache_resource
-def load_model():
-    """Загрузка модели"""
-    return (ViTForImageClassification
-            .from_pretrained("google/vit-base-patch16-224"))
-
-
-@st.cache_resource
-def load_processor():
-    """Загрузка процессора для обработки изображений."""
-    return (ViTImageProcessor
-            .from_pretrained("google/vit-base-patch16-224"))
+from utils import load_image_from_url, load_image_from_file, image_classification, translate_text
+from model import load_model, load_processor
+from exceptions import MissingSourceError, TwoSourcesError
 
 
 def get_image_link():
@@ -44,33 +16,6 @@ def get_image_link():
 def get_image_file():
     """Загрузка файла с изображением."""
     return st.file_uploader("Или загрузите изображение из файла")
-
-
-def load_image_from_url(url):
-    """Загрузка изображения из указанного URL-адреса
-    с помощью библиотеки requests."""
-    img = Image.open(requests.get(url, stream=True).raw)
-    return img
-
-
-def load_image_from_file(file):
-    """Загрузка изображения из файла."""
-    img = Image.open(file)
-    return img
-
-
-def image_classification(picture):
-    """Обработка и распознавание изображения.
-
-    Принимает изображение, преобразует его в требуемый формат
-    с помощью процессора, пропускает его через модель,
-    получает вероятности классов и возвращает предсказанный класс.
-    """
-    inputs = processor(images=picture, return_tensors="pt")
-    outputs = model(**inputs)
-    logits = outputs.logits
-    predicted_class_idx = logits.argmax(-1).item()
-    return model.config.id2label[predicted_class_idx]
 
 
 def show_results(results):
@@ -101,11 +46,8 @@ if result:
             raise MissingSourceError
         st.image(loaded_image)
         with st.spinner("Идет обработка... Пожалуйста, подождите..."):
-            result = image_classification(loaded_image)
-        translated_result = ts.translate_text(result,
-                                              translator="bing",
-                                              from_language="en",
-                                              to_language="ru")
+            result = image_classification(loaded_image, processor, model)
+        translated_result = translate_text(result, "en", "ru")
         st.markdown(f"Результаты распознавания: {translated_result}")
     except MissingSourceError:
         st.error(
